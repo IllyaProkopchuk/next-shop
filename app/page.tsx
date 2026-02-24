@@ -1,12 +1,12 @@
-import Link from "next/link";
+import Link from 'next/link'
 
 export default function Home() {
   return (
     <section className="space-y-6">
       <h1 className="text-4xl font-bold tracking-tight">Welcome to Next Shop</h1>
       <p className="max-w-xl text-gray-300">
-        Discover a curated selection of products and manage your cart with a simple,
-        modern interface.
+        Discover a curated selection of products and manage your cart with a simple, modern
+        interface.
       </p>
       <div className="flex gap-4">
         <Link
@@ -23,5 +23,5 @@ export default function Home() {
         </Link>
       </div>
     </section>
-  );
+  )
 }

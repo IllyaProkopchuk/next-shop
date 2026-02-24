@@ -4,7 +4,7 @@ declare const process: {
   env?: Record<string, string | undefined>
 }
 
-const getEnvVar = (key: string): string => {
+export const getEnvVar = (key: string): string => {
   if (typeof process === 'undefined' || !process.env?.[key]) {
     throw new Error(`Environment variable ${key} is not set`)
   }
