@@ -3,10 +3,17 @@ import Link from 'next/link'
 
 import ToggleElementCount from '@/app/cart/ToggleElementCount'
 import { getUserProducts } from '@/app/lib/products-api'
-import { Product } from '@/app/types/products'
+import { Product, ProductId } from '@/app/types/products'
 
 const CartPage = async () => {
   const cartItems: Product[] = await getUserProducts()
+  const cartItemIds: ProductId[] = await getUserProducts(true)
+
+  const getQuantity = (id: ProductId): number =>
+    cartItemIds.filter(productId => productId === id).length || 1
+
+  const totalPrice = cartItems.reduce((acc, el) => acc + el.price * getQuantity(el.id), 0)
+  const taxes = Math.floor(totalPrice * 0.1)
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-10">
@@ -27,11 +34,13 @@ const CartPage = async () => {
 
                 <div className="grow">
                   <h3 className="text-lg font-semibold text-white">{item.name}</h3>
-                  <ToggleElementCount element={item} />
+                  <ToggleElementCount element={item} quantity={getQuantity(item.id)} />
                 </div>
 
                 <div className="text-right">
-                  <span className="text-xl font-bold text-white">${item.price}</span>
+                  <span className="text-xl font-bold text-white">
+                    ${item.price * getQuantity(item.id)}
+                  </span>
                 </div>
               </div>
             ))
@@ -50,8 +59,8 @@ const CartPage = async () => {
 
           <div className="space-y-4 text-gray-300">
             <div className="flex justify-between">
-              <span>Товари ({cartItems.length})</span>
-              <span>${cartItems.reduce((acc, el) => (acc += +el.price), 0)}</span>
+              <span>Товари ({cartItemIds.length})</span>
+              <span>${totalPrice}</span>
             </div>
             <div className="flex justify-between">
               <span>Доставка</span>
@@ -59,14 +68,14 @@ const CartPage = async () => {
             </div>
             <div className="flex justify-between">
               <span>Податки</span>
-              <span>$0.00</span>
+              <span>${taxes}</span>
             </div>
 
             <hr className="border-gray-800 my-4" />
 
             <div className="flex justify-between text-xl font-bold text-white">
               <span>Разом</span>
-              <span>${cartItems.reduce((acc, el) => (acc += +el.price), 0)}</span>
+              <span>${totalPrice + taxes}</span>
             </div>
           </div>
 

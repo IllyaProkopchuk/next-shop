@@ -1,6 +1,9 @@
-import { Product, ProductId } from '@/app/types/products'
-import httpClient from '@/app/lib/axios-client'
 import { notFound } from 'next/navigation'
+
+import { AxiosError } from 'axios'
+
+import httpClient from '@/app/lib/axios-client'
+import { Product, ProductId } from '@/app/types/products'
 
 export const getProducts = async (): Promise<Product[]> => {
   const { data } = await httpClient.get<Product[]>('/api/products')
@@ -17,9 +20,8 @@ export const getProductById = async (id: ProductId): Promise<Product> => {
     }
 
     return data
-  } catch (err: any) {
-    console.log('error', err)
-    if (err.response?.status === 404) {
+  } catch (err: unknown) {
+    if (err instanceof AxiosError && err.response?.status === 404) {
       notFound()
     }
 
@@ -56,4 +58,16 @@ export const removeProductFromCart = async (productId: ProductId): Promise<Produ
   })
 
   return data
+}
+
+export const changeCartItemQuantity = async (
+  productId: ProductId,
+  action: 'increase' | 'decrease'
+): Promise<ProductId[]> => {
+  const { data } = await httpClient.patch<ProductId[]>('/api/user/card/quantity', {
+    productId,
+    action
+  })
+
+  return data ?? []
 }

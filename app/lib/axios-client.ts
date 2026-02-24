@@ -1,19 +1,23 @@
-import axios from 'axios';
+import axios from 'axios'
+
+/* eslint-env node */
+declare const process: {
+  env?: Record<string, string | undefined>
+}
 
 const httpClient = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
-    timeout: 10000,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+  baseURL: process.env?.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
 
 httpClient.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        console.error('API Error:', error.response?.data || error.message);
-        return Promise.reject(error);
-    }
-);
+  response => response,
+  error => {
+    return Promise.reject(error)
+  }
+)
 
-export default httpClient;
+export default httpClient

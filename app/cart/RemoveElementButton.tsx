@@ -1,9 +1,10 @@
 'use client'
 
+import { useTransition } from 'react'
+
 import { refreshCartAction } from '@/app/lib/actions'
 import { removeProductFromCart } from '@/app/lib/products-api'
 import { ProductId } from '@/app/types/products'
-import { useTransition } from 'react'
 
 interface Props {
   productId: ProductId

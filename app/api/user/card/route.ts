@@ -1,7 +1,7 @@
+import { NextResponse } from 'next/server'
+
 import { connectToDb } from '@/app/api/db'
 import { ProductId } from '@/app/types/products'
-import { request } from 'http'
-import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
   const { db } = await connectToDb()
@@ -56,7 +56,7 @@ export async function PATCH(request: Request) {
 
     // Повертаємо тільки масив ID
     return NextResponse.json(result.products)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: 'Помилка сервера' }, { status: 500 })
   }
 }
@@ -82,7 +82,7 @@ export async function DELETE(request: Request) {
     }
 
     return NextResponse.json(result.products)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: 'Помилка сервера' }, { status: 500 })
   }
 }

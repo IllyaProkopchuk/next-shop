@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+
 import { Product, ProductId } from '@/app/types/products'
 
 import ToggleCardButton from '../components/ToggleCardButton'
