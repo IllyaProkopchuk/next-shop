@@ -1,6 +1,18 @@
 import { Db, MongoClient, ServerApiVersion } from 'mongodb'
 
-const uri = `mongodb+srv://${process.env.NEXT_MONGO_DB_USERNAME}:${process.env.NEXT_MONGO_DB_PASSWORD}@nextjsshop.3y418cz.mongodb.net/?appName=nextJsShop`
+declare const process: {
+  env?: Record<string, string | undefined>
+}
+
+const getEnvVar = (key: string): string => {
+  if (typeof process === 'undefined' || !process.env?.[key]) {
+    throw new Error(`Environment variable ${key} is not set`)
+  }
+
+  return process.env[key] as string
+}
+
+const uri = `mongodb+srv://${getEnvVar('NEXT_MONGO_DB_USERNAME')}:${getEnvVar('NEXT_MONGO_DB_PASSWORD')}@nextjsshop.3y418cz.mongodb.net/?appName=nextJsShop`
 
 let cachedClient: MongoClient | null = null
 let cachedDb: Db | null = null
