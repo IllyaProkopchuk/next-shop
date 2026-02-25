@@ -33,8 +33,6 @@ const ProductCard = ({ product, cardIds }: ProductCardProps) => {
           </Link>
         </h2>
 
-        <p className="text-sm text-gray-600 mb-4 line-clamp-3 grow">{product.description}</p>
-
         <div className="mt-auto relative z-20">
           <ToggleCardButton product={product} cardsIds={cardIds} />
         </div>
