@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+import type { Document } from 'mongodb'
+
 import { connectToDb } from '@/app/api/db'
 import { ProductId } from '@/app/types/products'
 
@@ -13,18 +15,15 @@ export async function PATCH(request: Request) {
     const pId = Number(productId)
 
     if (action === 'increase') {
-      // $push is atomic — no race condition
-      const result = await db.collection('user').findOneAndUpdate(
-        { id: '1' },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      { $push: { products: pId } } as any,
-        { returnDocument: 'after', projection: { products: 1 } }
-      )
+      const result = await db
+        .collection('user')
+        .findOneAndUpdate({ id: '1' }, { $push: { products: pId } } as Document, {
+          returnDocument: 'after',
+          projection: { products: 1 }
+        })
       return NextResponse.json(result?.products ?? [])
     }
 
-    // Atomically remove exactly one occurrence of pId using an aggregation pipeline update.
-    // $pull removes ALL occurrences, so we use $let + $indexOfArray to splice out a single element.
     const result = await db.collection('user').findOneAndUpdate(
       { id: '1', products: pId },
       [
@@ -37,11 +36,7 @@ export async function PATCH(request: Request) {
                   $concatArrays: [
                     { $slice: ['$products', '$$idx'] },
                     {
-                      $slice: [
-                        '$products',
-                        { $add: ['$$idx', 1] },
-                        { $size: '$products' }
-                      ]
+                      $slice: ['$products', { $add: ['$$idx', 1] }, { $size: '$products' }]
                     }
                   ]
                 }
@@ -53,11 +48,8 @@ export async function PATCH(request: Request) {
       { returnDocument: 'after', projection: { products: 1 } }
     )
 
-    // No match means product wasn't in cart — return current state
     if (!result) {
-      const user = await db
-        .collection('user')
-        .findOne({ id: '1' }, { projection: { products: 1 } })
+      const user = await db.collection('user').findOne({ id: '1' }, { projection: { products: 1 } })
       return NextResponse.json(user?.products ?? [])
     }
 

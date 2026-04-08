@@ -28,7 +28,13 @@ const CartPage = async () => {
               >
                 <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-gray-800">
                   <div className="w-full h-full bg-gray-700 animate-pulse" />
-                  <Image src={item.image} alt={item.name} fill sizes="96px" className="object-cover" />
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    sizes="96px"
+                    className="object-cover"
+                  />
                 </div>
 
                 <div className="grow">

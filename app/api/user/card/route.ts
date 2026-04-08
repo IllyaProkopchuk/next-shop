@@ -54,7 +54,6 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ message: 'Користувача не знайдено' }, { status: 404 })
     }
 
-    // Повертаємо тільки масив ID
     return NextResponse.json(result.products)
   } catch {
     return NextResponse.json({ message: 'Помилка сервера' }, { status: 500 })
@@ -68,14 +67,12 @@ export async function DELETE(request: Request) {
 
     const pId = Number(productId)
 
-    const result = await db.collection('user').findOneAndUpdate(
-      { id: '1' },
-      { $pull: { products: pId } },
-      {
+    const result = await db
+      .collection('user')
+      .findOneAndUpdate({ id: '1' }, { $pull: { products: pId } } as any, {
         returnDocument: 'after',
         projection: { products: 1 }
-      }
-    )
+      })
 
     if (!result) {
       return NextResponse.json({ message: 'Користувача не знайдено' }, { status: 404 })
