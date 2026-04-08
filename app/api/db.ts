@@ -35,5 +35,10 @@ export const connectToDb = async () => {
   cachedClient = client
   cachedDb = client.db('shop')
 
-  return { client, db: client.db('shop') }
+  await Promise.all([
+    cachedDb.collection('products').createIndex({ id: 1 }, { unique: true }),
+    cachedDb.collection('user').createIndex({ id: 1 }, { unique: true })
+  ])
+
+  return { client, db: cachedDb }
 }

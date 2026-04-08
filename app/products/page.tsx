@@ -1,12 +1,14 @@
 import Link from 'next/link'
 
-import { getProducts, getUserProducts } from '@/app/lib/products-api'
+import { getProducts, getUserProductIds } from '@/app/lib/server-api'
 import ProductCard from '@/app/products/ProductCard'
 import { ProductId, Product as ProductType } from '@/app/types/products'
 
 const Product = async () => {
-  const products: ProductType[] = await getProducts()
-  const cardIds: ProductId[] = await getUserProducts(true)
+  const [products, cardIds]: [ProductType[], ProductId[]] = await Promise.all([
+    getProducts(),
+    getUserProductIds()
+  ])
 
   return (
     <main className="p-10">

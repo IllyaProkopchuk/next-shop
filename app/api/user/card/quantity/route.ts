@@ -12,32 +12,56 @@ export async function PATCH(request: Request) {
 
     const pId = Number(productId)
 
-    const user = await db.collection('user').findOne<{ products?: ProductId[] }>({ id: '1' })
-
-    const currentProducts: ProductId[] = user?.products ?? []
-
-    let updatedProducts: ProductId[]
-
     if (action === 'increase') {
-      updatedProducts = [...currentProducts, pId]
-    } else {
-      const index = currentProducts.indexOf(pId)
-
-      if (index === -1) {
-        return NextResponse.json(currentProducts)
-      }
-
-      updatedProducts = [
-        ...currentProducts.slice(0, index),
-        ...currentProducts.slice(index + 1, currentProducts.length)
-      ]
+      // $push is atomic — no race condition
+      const result = await db.collection('user').findOneAndUpdate(
+        { id: '1' },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      { $push: { products: pId } } as any,
+        { returnDocument: 'after', projection: { products: 1 } }
+      )
+      return NextResponse.json(result?.products ?? [])
     }
 
-    await db
-      .collection('user')
-      .updateOne({ id: '1' }, { $set: { products: updatedProducts } }, { upsert: true })
+    // Atomically remove exactly one occurrence of pId using an aggregation pipeline update.
+    // $pull removes ALL occurrences, so we use $let + $indexOfArray to splice out a single element.
+    const result = await db.collection('user').findOneAndUpdate(
+      { id: '1', products: pId },
+      [
+        {
+          $set: {
+            products: {
+              $let: {
+                vars: { idx: { $indexOfArray: ['$products', pId] } },
+                in: {
+                  $concatArrays: [
+                    { $slice: ['$products', '$$idx'] },
+                    {
+                      $slice: [
+                        '$products',
+                        { $add: ['$$idx', 1] },
+                        { $size: '$products' }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ],
+      { returnDocument: 'after', projection: { products: 1 } }
+    )
 
-    return NextResponse.json(updatedProducts)
+    // No match means product wasn't in cart — return current state
+    if (!result) {
+      const user = await db
+        .collection('user')
+        .findOne({ id: '1' }, { projection: { products: 1 } })
+      return NextResponse.json(user?.products ?? [])
+    }
+
+    return NextResponse.json(result.products ?? [])
   } catch {
     return NextResponse.json({ message: 'Помилка сервера' }, { status: 500 })
   }
