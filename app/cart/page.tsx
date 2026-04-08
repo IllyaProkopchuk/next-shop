@@ -2,12 +2,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import ToggleElementCount from '@/app/cart/ToggleElementCount'
-import { getUserProducts } from '@/app/lib/products-api'
-import { Product, ProductId } from '@/app/types/products'
+import { getUserCartData } from '@/app/lib/server-api'
+import { ProductId } from '@/app/types/products'
 
 const CartPage = async () => {
-  const cartItems: Product[] = await getUserProducts()
-  const cartItemIds: ProductId[] = await getUserProducts(true)
+  const { products: cartItems, productIds: cartItemIds } = await getUserCartData()
 
   const getQuantity = (id: ProductId): number =>
     cartItemIds.filter(productId => productId === id).length || 1
@@ -29,7 +28,13 @@ const CartPage = async () => {
               >
                 <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-gray-800">
                   <div className="w-full h-full bg-gray-700 animate-pulse" />
-                  <Image src={item.image} alt={item.name} fill className="object-cover" />
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    sizes="96px"
+                    className="object-cover"
+                  />
                 </div>
 
                 <div className="grow">

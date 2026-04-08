@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+import type { Document } from 'mongodb'
+
 import { connectToDb } from '@/app/api/db'
 import { ProductId } from '@/app/types/products'
 
@@ -12,32 +14,46 @@ export async function PATCH(request: Request) {
 
     const pId = Number(productId)
 
-    const user = await db.collection('user').findOne<{ products?: ProductId[] }>({ id: '1' })
-
-    const currentProducts: ProductId[] = user?.products ?? []
-
-    let updatedProducts: ProductId[]
-
     if (action === 'increase') {
-      updatedProducts = [...currentProducts, pId]
-    } else {
-      const index = currentProducts.indexOf(pId)
-
-      if (index === -1) {
-        return NextResponse.json(currentProducts)
-      }
-
-      updatedProducts = [
-        ...currentProducts.slice(0, index),
-        ...currentProducts.slice(index + 1, currentProducts.length)
-      ]
+      const result = await db
+        .collection('user')
+        .findOneAndUpdate({ id: '1' }, { $push: { products: pId } } as Document, {
+          returnDocument: 'after',
+          projection: { products: 1 }
+        })
+      return NextResponse.json(result?.products ?? [])
     }
 
-    await db
-      .collection('user')
-      .updateOne({ id: '1' }, { $set: { products: updatedProducts } }, { upsert: true })
+    const result = await db.collection('user').findOneAndUpdate(
+      { id: '1', products: pId },
+      [
+        {
+          $set: {
+            products: {
+              $let: {
+                vars: { idx: { $indexOfArray: ['$products', pId] } },
+                in: {
+                  $concatArrays: [
+                    { $slice: ['$products', '$$idx'] },
+                    {
+                      $slice: ['$products', { $add: ['$$idx', 1] }, { $size: '$products' }]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ],
+      { returnDocument: 'after', projection: { products: 1 } }
+    )
 
-    return NextResponse.json(updatedProducts)
+    if (!result) {
+      const user = await db.collection('user').findOne({ id: '1' }, { projection: { products: 1 } })
+      return NextResponse.json(user?.products ?? [])
+    }
+
+    return NextResponse.json(result.products ?? [])
   } catch {
     return NextResponse.json({ message: 'Помилка сервера' }, { status: 500 })
   }

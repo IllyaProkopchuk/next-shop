@@ -18,8 +18,8 @@ const ProductCard = ({ product, cardIds }: ProductCardProps) => {
       className="relative flex flex-col h-full border rounded-lg p-4 w-64 bg-gray-400 shadow-sm group hover:bg-gray-300 transition-colors"
       aria-labelledby={`product-${product.id}`}
     >
-      <figure className="w-full h-40 mb-3 overflow-hidden rounded shrink-0">
-        <Image src={product.image} alt={product.name} fill className="object-cover" />
+      <figure className="relative w-full h-40 mb-3 overflow-hidden rounded shrink-0">
+        <Image src={product.image} alt={product.name} fill sizes="256px" className="object-cover" />
       </figure>
 
       <div className="flex flex-col grow">

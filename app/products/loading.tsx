@@ -36,7 +36,7 @@ const SceletonProductCard = () => {
           alt="Loading..."
           fill
           className="object-cover opacity-50"
-          priority // щоб скелетон з'явився миттєво
+          priority
         />
       </figure>
 

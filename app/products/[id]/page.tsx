@@ -2,13 +2,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import ToggleCardButton from '@/app/components/ToggleCardButton'
-import { getProductById, getUserProducts } from '@/app/lib/products-api'
+import { getProductById, getUserProductIds } from '@/app/lib/server-api'
 import { Product, ProductId } from '@/app/types/products'
 
 const Page = async ({ params }: { params: { id: ProductId } }) => {
   const { id } = await params
-  const product: Product = await getProductById(id)
-  const cartIds: number[] = await getUserProducts(true)
+  const [product, cartIds]: [Product, ProductId[]] = await Promise.all([
+    getProductById(id),
+    getUserProductIds()
+  ])
 
   if (!product) {
     return <div>Product not found</div>
@@ -27,7 +29,14 @@ const Page = async ({ params }: { params: { id: ProductId } }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         <section className="space-y-4">
           <div className="relative aspect-square overflow-hidden rounded-2xl bg-gray-800 border border-gray-700">
-            <Image src={product.image} alt={product.name} fill className="object-cover" priority />
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              priority
+            />
           </div>
         </section>
 
