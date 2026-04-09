@@ -15,7 +15,7 @@ type ProductCardProps = {
 const ProductCard = ({ product, cardIds }: ProductCardProps) => {
   return (
     <article
-      className="relative flex flex-col h-full border rounded-lg p-4 w-64 bg-gray-400 shadow-sm group hover:bg-gray-300 transition-colors"
+      className="relative flex flex-col h-full border border-gray-700 rounded-lg p-4 w-64 bg-gray-800 shadow-sm group hover:bg-gray-700 transition-colors"
       aria-labelledby={`product-${product.id}`}
     >
       <figure className="relative w-full h-40 mb-3 overflow-hidden rounded shrink-0">
@@ -26,7 +26,7 @@ const ProductCard = ({ product, cardIds }: ProductCardProps) => {
         <h2 id={`product-${product.id}`}>
           <Link
             href={`/products/${product.id}`}
-            className="text-lg font-semibold mb-1 line-clamp-2 text-black min-h-14 
+            className="text-lg font-semibold mb-1 line-clamp-2 text-white min-h-14
                    after:content-[''] after:absolute after:inset-0 after:z-10"
           >
             {product.name}
