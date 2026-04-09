@@ -24,7 +24,7 @@ const RemoveElementButton = ({ productId }: Props) => {
   return (
     <button
       onClick={handleRemoveElement}
-      className="text-sm text-red-500 hover:underline cursor-pointer"
+      className="text-sm text-red-500 hover:underline cursor-pointer min-h-11 inline-flex items-center px-1"
     >
       {isPending ? 'Видаляємо...' : 'Видалити'}
     </button>
