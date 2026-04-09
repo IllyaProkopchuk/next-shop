@@ -38,7 +38,7 @@ const CartPage = async () => {
                 </div>
 
                 <div className="grow">
-                  <h3 className="text-lg font-semibold text-white">{item.name}</h3>
+                  <h2 className="text-lg font-semibold text-white">{item.name}</h2>
                   <ToggleElementCount element={item} quantity={getQuantity(item.id)} />
                 </div>
 
