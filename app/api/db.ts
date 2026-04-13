@@ -21,6 +21,36 @@ let cachedDb: Db | null = null
 let indexesInitialized = false
 
 export const connectToDb = async (): Promise<{ client: MongoClient; db: Db }> => {
+  if (process.env.MONGODB_MOCK) {
+    return {
+      client: { connect: () => Promise.resolve() } as any,
+      db: {
+        collection: (name: string) => ({
+          find: () => ({
+            toArray: () =>
+              Promise.resolve(
+                name === COLLECTIONS.PRODUCTS
+                  ? [
+                      {
+                        id: 1,
+                        name: 'Mock Product',
+                        price: 100,
+                        image: '/test.png',
+                        description: 'Mock Description'
+                      }
+                    ]
+                  : []
+              )
+          }),
+          findOne: () =>
+            Promise.resolve(name === COLLECTIONS.USERS ? { id: '1', products: [] } : null),
+          updateOne: () => Promise.resolve({ success: true }),
+          createIndex: () => Promise.resolve({})
+        })
+      } as any
+    }
+  }
+
   if (cachedClient && cachedDb) {
     return { client: cachedClient, db: cachedDb }
   }
