@@ -3,8 +3,7 @@
 import { useEffect, useState, useTransition } from 'react'
 
 import RemoveElementButton from '@/app/cart/RemoveElementButton'
-import { refreshCartAction } from '@/app/lib/actions'
-import { changeCartItemQuantity } from '@/app/lib/products-api'
+import { changeQuantityAction } from '@/app/lib/actions'
 import { Product } from '@/app/types/products'
 
 interface Props {
@@ -30,8 +29,12 @@ const ToggleElementCount = ({ element, quantity }: Props) => {
     })
 
     startTransition(async () => {
-      await changeCartItemQuantity(element.id, action)
-      await refreshCartAction()
+      const result = await changeQuantityAction(element.id, action)
+
+      if (!result.success) {
+        alert(result.error || 'Не вдалося змінити кількість')
+        setCount(quantity) // відкат стану
+      }
     })
   }
 
@@ -41,18 +44,18 @@ const ToggleElementCount = ({ element, quantity }: Props) => {
         <button
           type="button"
           onClick={() => updateQuantity('decrease')}
-          className="px-3 py-1 hover:bg-gray-800 text-gray-400 disabled:opacity-40"
+          className="px-4 py-3 hover:bg-gray-800 text-gray-400 disabled:opacity-40"
           disabled={count <= 1 || isPending}
         >
           -
         </button>
-        <span className="px-3 py-1 text-white border-x border-gray-700">
-          {isPending ? 'Loading...' : count}
+        <span className="px-3 py-3 text-white border-x border-gray-700">
+          {isPending ? '…' : count}
         </span>
         <button
           type="button"
           onClick={() => updateQuantity('increase')}
-          className="px-3 py-1 hover:bg-gray-800 text-gray-400 disabled:opacity-40"
+          className="px-4 py-3 hover:bg-gray-800 text-gray-400 disabled:opacity-40"
           disabled={isPending}
         >
           +

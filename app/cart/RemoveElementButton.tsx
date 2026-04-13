@@ -2,8 +2,7 @@
 
 import { useTransition } from 'react'
 
-import { refreshCartAction } from '@/app/lib/actions'
-import { removeProductFromCart } from '@/app/lib/products-api'
+import { removeFromCartAction } from '@/app/lib/actions'
 import { ProductId } from '@/app/types/products'
 
 interface Props {
@@ -15,16 +14,14 @@ const RemoveElementButton = ({ productId }: Props) => {
 
   const handleRemoveElement = async () => {
     startTransition(async () => {
-      await removeProductFromCart(productId)
-
-      await refreshCartAction()
+      await removeFromCartAction(productId)
     })
   }
 
   return (
     <button
       onClick={handleRemoveElement}
-      className="text-sm text-red-500 hover:underline cursor-pointer"
+      className="text-sm text-red-500 hover:underline cursor-pointer min-h-11 inline-flex items-center px-1"
     >
       {isPending ? 'Видаляємо...' : 'Видалити'}
     </button>

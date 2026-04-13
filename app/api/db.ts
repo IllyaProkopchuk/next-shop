@@ -1,5 +1,7 @@
 import { Db, MongoClient, ServerApiVersion } from 'mongodb'
 
+import { COLLECTIONS, DB_NAME } from '@/app/lib/constants'
+
 declare const process: {
   env?: Record<string, string | undefined>
 }
@@ -16,8 +18,9 @@ const uri = `mongodb+srv://${getEnvVar('NEXT_MONGO_DB_USERNAME')}:${getEnvVar('N
 
 let cachedClient: MongoClient | null = null
 let cachedDb: Db | null = null
+let indexesInitialized = false
 
-export const connectToDb = async () => {
+export const connectToDb = async (): Promise<{ client: MongoClient; db: Db }> => {
   if (cachedClient && cachedDb) {
     return { client: cachedClient, db: cachedDb }
   }
@@ -32,13 +35,17 @@ export const connectToDb = async () => {
 
   await client.connect()
 
+  const db = client.db(DB_NAME)
   cachedClient = client
-  cachedDb = client.db('shop')
+  cachedDb = db
 
-  await Promise.all([
-    cachedDb.collection('products').createIndex({ id: 1 }, { unique: true }),
-    cachedDb.collection('user').createIndex({ id: 1 }, { unique: true })
-  ])
+  if (!indexesInitialized) {
+    await Promise.all([
+      db.collection(COLLECTIONS.PRODUCTS).createIndex({ id: 1 }, { unique: true }),
+      db.collection(COLLECTIONS.USERS).createIndex({ id: 1 }, { unique: true })
+    ])
+    indexesInitialized = true
+  }
 
-  return { client, db: cachedDb }
+  return { client, db }
 }

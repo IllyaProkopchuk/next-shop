@@ -1,3 +1,4 @@
+import { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -5,7 +6,30 @@ import ToggleCardButton from '@/app/components/ToggleCardButton'
 import { getProductById, getUserProductIds } from '@/app/lib/server-api'
 import { Product, ProductId } from '@/app/types/products'
 
-const Page = async ({ params }: { params: { id: ProductId } }) => {
+interface PageProps {
+  params: Promise<{ id: ProductId }>
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params
+  const product = await getProductById(id)
+
+  if (!product) {
+    return { title: 'Product Not Found' }
+  }
+
+  return {
+    title: `${product.name} | Next Shop`,
+    description: product.description.slice(0, 160),
+    openGraph: {
+      title: product.name,
+      description: product.description,
+      images: [{ url: product.image }]
+    }
+  }
+}
+
+const Page = async ({ params }: PageProps) => {
   const { id } = await params
   const [product, cartIds]: [Product, ProductId[]] = await Promise.all([
     getProductById(id),

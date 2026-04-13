@@ -17,8 +17,14 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Next Shop',
-  description: 'Simple demo shop built with Next.js'
+  title: 'Next Shop | Сучасний магазин електроніки',
+  description: 'Найкращі пропозиції на техніку та гаджети з доставкою.',
+  keywords: ['nextjs', 'shop', 'ecommerce', 'electronics'],
+  openGraph: {
+    title: 'Next Shop | Найкраща електроніка',
+    description: 'Купуй найкраще в нашому магазині з швидкою доставкою.',
+    type: 'website'
+  }
 }
 
 export default function RootLayout({
