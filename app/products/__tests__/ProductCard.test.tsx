@@ -1,4 +1,5 @@
 import React from 'react'
+
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -41,7 +42,7 @@ describe('ProductCard', () => {
 
   it('renders product information correctly', () => {
     render(<ProductCard product={mockProduct} cardIds={[]} />)
-    
+
     expect(screen.getByText('Test Product')).toBeInTheDocument()
     const image = screen.getByRole('img')
     expect(image).toHaveAttribute('src', '/test.png')
@@ -50,7 +51,7 @@ describe('ProductCard', () => {
 
   it('renders a link to the product details page', () => {
     render(<ProductCard product={mockProduct} cardIds={[]} />)
-    
+
     const link = screen.getByRole('link', { name: 'Test Product' })
     expect(link).toHaveAttribute('href', '/products/1')
   })

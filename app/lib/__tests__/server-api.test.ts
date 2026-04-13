@@ -1,21 +1,22 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { connectToDb } from '@/app/api/db'
 import { COLLECTIONS } from '@/app/lib/constants'
+
+import { getProducts, getUserCartData } from '../server-api'
 
 vi.mock('@/app/api/db', () => ({
   connectToDb: vi.fn(),
-  getEnvVar: vi.fn((key) => `mock_${key}`),
+  getEnvVar: vi.fn(key => `mock_${key}`)
 }))
 
 vi.mock('next/navigation', () => ({
-  notFound: vi.fn(),
+  notFound: vi.fn()
 }))
-
-import { getProducts, getUserCartData } from '../server-api'
-import { connectToDb } from '@/app/api/db'
 
 describe('server-api', () => {
   const mockDb = {
-    collection: vi.fn(),
+    collection: vi.fn()
   }
 
   beforeEach(() => {
@@ -27,7 +28,7 @@ describe('server-api', () => {
     const mockProducts = [{ id: 1, name: 'Product 1' }]
     const mockCollection = {
       find: vi.fn().mockReturnThis(),
-      toArray: vi.fn().mockResolvedValue(mockProducts),
+      toArray: vi.fn().mockResolvedValue(mockProducts)
     }
     mockDb.collection.mockReturnValue(mockCollection)
 
@@ -38,22 +39,22 @@ describe('server-api', () => {
   it('getUserCartData returns combined cart data', async () => {
     const mockUser = { products: [{ id: 1, quantity: 2 }] }
     const mockProducts = [{ id: 1, name: 'Product 1', price: 100 }]
-    
+
     const usersCollection = {
-      findOne: vi.fn().mockResolvedValue(mockUser),
+      findOne: vi.fn().mockResolvedValue(mockUser)
     }
     const productsCollection = {
       find: vi.fn().mockReturnThis(),
-      toArray: vi.fn().mockResolvedValue(mockProducts),
+      toArray: vi.fn().mockResolvedValue(mockProducts)
     }
 
-    mockDb.collection.mockImplementation((name) => {
+    mockDb.collection.mockImplementation(name => {
       if (name === COLLECTIONS.USERS) return usersCollection
       if (name === COLLECTIONS.PRODUCTS) return productsCollection
       return {
         findOne: vi.fn(),
         find: vi.fn().mockReturnThis(),
-        toArray: vi.fn().mockResolvedValue([]),
+        toArray: vi.fn().mockResolvedValue([])
       }
     })
 

@@ -31,7 +31,7 @@ const ToggleCardButton = ({ product, cardsIds }: Props) => {
 
       if (!result.success) {
         alert(result.error || 'Щось пішло не так')
-        // Optimistic UI автоматично відкотиться після завершення transition, 
+        // Optimistic UI автоматично відкотиться після завершення transition,
         // оскільки ми не оновили cardIds через revalidatePath (якщо була помилка)
       }
     })

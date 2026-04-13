@@ -41,9 +41,9 @@ describe('ToggleCardButton', () => {
   it('calls addToCartAction when clicked and not in cart', async () => {
     const { addToCartAction } = await import('@/app/lib/actions')
     render(<ToggleCardButton product={mockProduct} cardsIds={[]} />)
-    
+
     fireEvent.click(screen.getByRole('button'))
-    
+
     expect(addToCartAction).toHaveBeenCalledWith(mockProduct.id)
   })
 })

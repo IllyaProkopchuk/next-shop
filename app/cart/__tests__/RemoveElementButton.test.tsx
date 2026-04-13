@@ -1,4 +1,5 @@
 import { useTransition } from 'react'
+
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -29,15 +30,15 @@ describe('RemoveElementButton', () => {
   it('calls removeFromCartAction when clicked', async () => {
     const { removeFromCartAction } = await import('@/app/lib/actions')
     render(<RemoveElementButton productId={productId} />)
-    
+
     fireEvent.click(screen.getByText('Видалити'))
-    
+
     expect(removeFromCartAction).toHaveBeenCalledWith(productId)
   })
 
   it('shows pending state when isPending is true', () => {
     vi.mocked(useTransition).mockReturnValue([true, (cb: () => void) => cb()])
-    
+
     render(<RemoveElementButton productId={productId} />)
     expect(screen.getByText('Видаляємо...')).toBeInTheDocument()
   })
