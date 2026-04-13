@@ -3,16 +3,13 @@ import Link from 'next/link'
 
 import ToggleElementCount from '@/app/cart/ToggleElementCount'
 import { getUserCartData } from '@/app/lib/server-api'
-import { ProductId } from '@/app/types/products'
 
 const CartPage = async () => {
-  const { products: cartItems, productIds: cartItemIds } = await getUserCartData()
+  const { products: cartItems } = await getUserCartData()
 
-  const getQuantity = (id: ProductId): number =>
-    cartItemIds.filter(productId => productId === id).length || 1
-
-  const totalPrice = cartItems.reduce((acc, el) => acc + el.price * getQuantity(el.id), 0)
+  const totalPrice = cartItems.reduce((acc, el) => acc + el.price * el.quantity, 0)
   const taxes = Math.floor(totalPrice * 0.1)
+  const totalItemsCount = cartItems.reduce((acc, el) => acc + el.quantity, 0)
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-10">
@@ -39,12 +36,12 @@ const CartPage = async () => {
 
                 <div className="grow">
                   <h2 className="text-lg font-semibold text-white">{item.name}</h2>
-                  <ToggleElementCount element={item} quantity={getQuantity(item.id)} />
+                  <ToggleElementCount element={item} quantity={item.quantity} />
                 </div>
 
                 <div className="text-right">
                   <span className="text-xl font-bold text-white">
-                    ${item.price * getQuantity(item.id)}
+                    ${item.price * item.quantity}
                   </span>
                 </div>
               </div>
@@ -64,7 +61,7 @@ const CartPage = async () => {
 
           <div className="space-y-4 text-gray-300">
             <div className="flex justify-between">
-              <span>Товари ({cartItemIds.length})</span>
+              <span>Товари ({totalItemsCount})</span>
               <span>${totalPrice}</span>
             </div>
             <div className="flex justify-between">

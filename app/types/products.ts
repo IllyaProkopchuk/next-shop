@@ -7,3 +7,8 @@ export type Product = {
 }
 
 export type ProductId = number
+
+export type CartItem = {
+  id: ProductId
+  quantity: number
+}

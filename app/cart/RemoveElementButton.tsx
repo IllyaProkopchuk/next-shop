@@ -2,8 +2,7 @@
 
 import { useTransition } from 'react'
 
-import { refreshCartAction } from '@/app/lib/actions'
-import { removeProductFromCart } from '@/app/lib/products-api'
+import { removeFromCartAction } from '@/app/lib/actions'
 import { ProductId } from '@/app/types/products'
 
 interface Props {
@@ -15,9 +14,7 @@ const RemoveElementButton = ({ productId }: Props) => {
 
   const handleRemoveElement = async () => {
     startTransition(async () => {
-      await removeProductFromCart(productId)
-
-      await refreshCartAction()
+      await removeFromCartAction(productId)
     })
   }
 

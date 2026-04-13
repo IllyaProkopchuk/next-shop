@@ -3,8 +3,7 @@
 import { useEffect, useState, useTransition } from 'react'
 
 import RemoveElementButton from '@/app/cart/RemoveElementButton'
-import { refreshCartAction } from '@/app/lib/actions'
-import { changeCartItemQuantity } from '@/app/lib/products-api'
+import { changeQuantityAction } from '@/app/lib/actions'
 import { Product } from '@/app/types/products'
 
 interface Props {
@@ -30,8 +29,12 @@ const ToggleElementCount = ({ element, quantity }: Props) => {
     })
 
     startTransition(async () => {
-      await changeCartItemQuantity(element.id, action)
-      await refreshCartAction()
+      const result = await changeQuantityAction(element.id, action)
+
+      if (!result.success) {
+        alert(result.error || 'Не вдалося змінити кількість')
+        setCount(quantity) // відкат стану
+      }
     })
   }
 

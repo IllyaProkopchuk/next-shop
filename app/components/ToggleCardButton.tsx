@@ -2,8 +2,7 @@
 
 import { MouseEvent, useOptimistic, useTransition } from 'react'
 
-import { refreshProductsAction } from '@/app/lib/actions'
-import { addProductToUser, removeProductFromCart } from '@/app/lib/products-api'
+import { addToCartAction, removeFromCartAction } from '@/app/lib/actions'
 import { Product, ProductId } from '@/app/types/products'
 
 interface Props {
@@ -26,13 +25,15 @@ const ToggleCardButton = ({ product, cardsIds }: Props) => {
     startTransition(async () => {
       toggleOptimisticInCard(!optimisticInCard)
 
-      if (!isInBucket) {
-        await addProductToUser(product.id)
-      } else {
-        await removeProductFromCart(product.id)
-      }
+      const result = !isInBucket
+        ? await addToCartAction(product.id)
+        : await removeFromCartAction(product.id)
 
-      await refreshProductsAction()
+      if (!result.success) {
+        alert(result.error || 'Щось пішло не так')
+        // Optimistic UI автоматично відкотиться після завершення transition, 
+        // оскільки ми не оновили cardIds через revalidatePath (якщо була помилка)
+      }
     })
   }
 
