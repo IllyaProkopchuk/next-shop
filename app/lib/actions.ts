@@ -12,7 +12,7 @@ type ActionResponse = {
 }
 
 // Допоміжна функція для валідації ID
-function validateProductId(id: any): number {
+function validateProductId(id: ProductId): number {
   const pId = Number(id)
   if (isNaN(pId) || pId <= 0) {
     throw new Error('Невалідний ID товару')
@@ -34,7 +34,7 @@ export async function addToCartAction(productId: ProductId): Promise<ActionRespo
     } else {
       await db
         .collection(COLLECTIONS.USERS)
-        .updateOne({ id: USER_ID }, { $push: { products: { id: pId, quantity: 1 } } } as any)
+        .updateOne({ id: USER_ID }, { $push: { products: { id: pId, quantity: 1 } } } as object)
     }
 
     revalidatePath('/products')
@@ -53,7 +53,7 @@ export async function removeFromCartAction(productId: ProductId): Promise<Action
 
     await db
       .collection(COLLECTIONS.USERS)
-      .updateOne({ id: USER_ID }, { $pull: { products: { id: pId } } } as any)
+      .updateOne({ id: USER_ID }, { $pull: { products: { id: pId } } } as object)
 
     revalidatePath('/products')
     revalidatePath('/cart')

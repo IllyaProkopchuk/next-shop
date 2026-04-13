@@ -10,7 +10,7 @@ vi.mock('next/navigation', () => ({
   notFound: vi.fn(),
 }))
 
-import { getProducts, getProductById, getUserProductIds, getUserCartData } from '../server-api'
+import { getProducts, getUserCartData } from '../server-api'
 import { connectToDb } from '@/app/api/db'
 
 describe('server-api', () => {
@@ -20,7 +20,7 @@ describe('server-api', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    ;(connectToDb as any).mockResolvedValue({ db: mockDb })
+    vi.mocked(connectToDb).mockResolvedValue({ db: mockDb as unknown as any })
   })
 
   it('getProducts returns all products', async () => {

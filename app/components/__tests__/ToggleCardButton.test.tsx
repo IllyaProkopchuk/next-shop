@@ -15,7 +15,7 @@ vi.mock('react', async () => {
   return {
     ...actual,
     useTransition: () => [false, (cb: () => void) => cb()],
-    useOptimistic: (state: any) => [state, vi.fn()]
+    useOptimistic: (state: unknown) => [state, vi.fn()]
   }
 })
 
