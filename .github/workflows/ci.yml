@@ -52,6 +52,7 @@ jobs:
         env:
           NEXT_MONGO_DB_USERNAME: mock_user
           NEXT_MONGO_DB_PASSWORD: mock_password
+          MONGODB_MOCK: "true"
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
